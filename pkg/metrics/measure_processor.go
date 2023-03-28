@@ -115,6 +115,7 @@ loop:
 	for {
 		select {
 		case measure := <-p.ch:
+			p.initMeasure(newMeasureContext(ctx), measure)
 			if !p.processMeasure(ctx, measure) {
 				break
 			}
@@ -318,7 +319,8 @@ func (s *MeasureProcessor) flushMeasures(ctx context.Context, measures []*Measur
 
 func (p *MeasureProcessor) _flushMeasures(ctx *measureContext, measures []*Measure) {
 	for _, m := range measures {
-		p.initMeasure(ctx, m)
+		// already initialized
+		m.Time = m.Time.Truncate(time.Minute)
 	}
 
 	if err := InsertMeasures(ctx, p.App, measures); err != nil {
@@ -349,7 +351,6 @@ func (p *MeasureProcessor) initMeasure(ctx *measureContext, measure *Measure) {
 		digest.WriteString(value)
 	}
 
-	measure.Time = measure.Time.Truncate(time.Minute)
 	measure.AttrsHash = digest.Sum64()
 	measure.AttrKeys = keys
 	measure.AttrValues = values
