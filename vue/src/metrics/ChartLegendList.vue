@@ -7,7 +7,8 @@
       :class="{ 'text--secondary': !isSelected(item) }"
       @mouseenter="$emit('hover:item', { item: item, hover: true })"
       @mouseleave="$emit('hover:item', { item: item, hover: false })"
-      @click.stop="toggle(item)"
+      @click.exact.stop="toggle(item)"
+      @click.meta.stop="toggleOthers(item)"
     >
       <v-icon size="16" :color="isSelected(item) ? item.color : 'grey'" class="mr-1"
         >mdi-circle</v-icon
@@ -59,6 +60,7 @@ export default defineComponent({
     watch(selectedTimeseries, (selectedTimeseries) => ctx.emit('current-items', selectedTimeseries))
 
     function toggle(ts: StyledTimeseries) {
+      console.log("toggle")
       const items = selectedTimeseries.value.slice()
       const index = items.findIndex((item) => item.id === ts.id)
       if (index >= 0) {
@@ -69,6 +71,11 @@ export default defineComponent({
       selectedTimeseries.value = items
     }
 
+    function toggleOthers(ts: StyledTimeseries) {
+      console.log("toggleOthers")
+      selectedTimeseries.value = [ts]
+    }
+
     function isSelected(ts: StyledTimeseries): boolean {
       const index = selectedTimeseries.value.findIndex((item) => item.id === ts.id)
       return index >= 0
@@ -77,6 +84,7 @@ export default defineComponent({
     return {
       selectedTimeseries,
       toggle,
+      toggleOthers,
       isSelected,
 
       truncateMiddle,

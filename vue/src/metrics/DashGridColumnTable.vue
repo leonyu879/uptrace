@@ -3,6 +3,7 @@
     <TimeseriesTable
       :loading="tableQuery.loading"
       :items="tableQuery.items"
+      :grid-query="gridQuery"
       :items-per-page="5"
       :columns="tableQuery.columns"
       :order="tableQuery.order"
@@ -38,6 +39,10 @@ export default defineComponent({
     gridColumn: {
       type: Object as PropType<TableGridColumn>,
       required: true,
+    },
+    gridQuery: {
+      type: String,
+      default: '',
     },
   },
 

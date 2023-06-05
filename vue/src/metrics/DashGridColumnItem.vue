@@ -12,6 +12,7 @@
       v-if="gridColumn.type === GridColumnType.Table"
       :date-range="dateRange"
       :grid-column="gridColumn"
+      :grid-query="gridQuery"
       :height="height"
       :verbose="verbose"
       @error="$emit('error', $event)"
@@ -65,6 +66,10 @@ export default defineComponent({
     verbose: {
       type: Boolean,
       default: false,
+    },
+    gridQuery: {
+      type: String,
+      default: '',
     },
   },
 

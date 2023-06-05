@@ -110,6 +110,7 @@
         v-else-if="activeGridColumn.type === GridColumnType.Table"
         :date-range="dateRange"
         :grid-column="activeGridColumn"
+        :grid-query="gridQuery"
         :editable="editable"
         @click:save="
           dialog = false

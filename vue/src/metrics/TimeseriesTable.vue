@@ -20,8 +20,11 @@
       >
         <template #default="{ metrics, value, time }">
           <template v-for="attrKey in grouping">
-            <td v-if="attrKey === AttrKey.spanGroupId" :key="attrKey">
-              <router-link :to="spanListRouteFor(item)">{{ eventOrSpanName(item) }}</router-link>
+            <td v-if="attrKey === 'span.group_id'" :key="attrKey">
+              <router-link :to="spanListRouteFor(item)">{{ item }}</router-link>
+            </td>
+            <td v-else-if="attrKey === 'http.route'" :key="attrKey">
+              <router-link :to="spanListRouteForHttpRoute(item)">{{ item[attrKey] }}</router-link>
             </td>
             <td v-else :key="attrKey">{{ item[attrKey] }}</td>
           </template>
@@ -93,6 +96,10 @@ export default defineComponent({
       type: Object as PropType<AxiosParams>,
       default: undefined,
     },
+    gridQuery: {
+      type: String,
+      default: '',
+    },
   },
 
   setup(props) {
@@ -126,7 +133,25 @@ export default defineComponent({
       }
     }
 
-    return { AttrKey, grouping, aggColumns, headers, spanListRouteFor, eventOrSpanName }
+    function spanListRouteForHttpRoute(item: TableItem) {
+      const query = exploreAttr(AttrKey.spanGroupId)
+      const where = []
+      if (props.gridQuery !== undefined) {
+        where.push(props.gridQuery.split(' ').slice(1).join(' '))
+      }
+      where.push(`http.route like "%${item['http.route']}%"`)
+      if (item['errorCode'] !== undefined) {
+        where.push(`span.status_message = ${item.errorCode}`)
+      }
+      return {
+        name: 'SpanList',
+        query: {
+          query: `${query} | where ${where.join(' and ')}`,
+        },
+      }
+    }
+
+    return { AttrKey, grouping, aggColumns, headers, spanListRouteFor, eventOrSpanName, spanListRouteForHttpRoute }
   },
 })
 

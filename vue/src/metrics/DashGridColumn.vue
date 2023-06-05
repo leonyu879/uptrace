@@ -87,6 +87,7 @@
     <DashGridColumnItem
       :date-range="dateRange"
       :grid-column="internalGridColumn"
+      :grid-query="gridQuery"
       :height="height"
       @error="columnError = $event"
     />
