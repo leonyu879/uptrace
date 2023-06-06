@@ -139,7 +139,7 @@ export default defineComponent({
       if (props.gridQuery !== undefined) {
         where.push(props.gridQuery.split(' ').slice(1).join(' '))
       }
-      where.push(`http.route like "%${item['http.route']}%"`)
+      where.push(`http.route like "%${item['http.route']}"`)
       if (item['errorCode'] !== undefined) {
         where.push(`span.status_message = ${item.errorCode}`)
       }
