@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-wrap justify-center text-caption" :class="`flex-${direction}`">
     <div
-      v-for="item in timeseries"
+      v-for="item in sortTimeseries(timeseries)"
       :key="item.name"
       class="mx-2 d-flex align-center cursor-pointer"
       :class="{ 'text--secondary': !isSelected(item) }"
@@ -94,11 +94,19 @@ export default defineComponent({
       return index >= 0
     }
 
+    function sortTimeseries(tsList: StyledTimeseries[]): StyledTimeseries[] {
+      const key = props.values[0]
+      return props.timeseries.sort(function(a, b) {
+        return b[key] - a[key]
+      })
+    }
+
     return {
       selectedTimeseries,
       toggle,
       select,
       isSelected,
+      sortTimeseries,
 
       truncateMiddle,
     }
