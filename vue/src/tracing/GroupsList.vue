@@ -219,6 +219,10 @@ export default defineComponent({
     const pager = usePager({ perPage: 15 })
     const pagedGroups = computed((): Group[] => {
       const pagedGroups = filteredGroups.value.slice(pager.pos.start, pager.pos.end)
+      pagedGroups.sort(function (g1, g2): number {
+        const column = props.order.column === undefined ? "span.count_per_min": props.order.column
+        return g1[column] - g2[column]
+      })
       return pagedGroups
     })
     watch(
