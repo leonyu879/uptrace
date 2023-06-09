@@ -80,6 +80,11 @@ export default defineComponent({
         chips.push({ key: AttrKey.serviceName, value: service, text: service })
       }
 
+      const statusMsg = props.span.statusMessage
+      if (statusMsg){
+        chips.push({ key: AttrKey.spanStatusMessage, value: statusMsg, text: statusMsg })
+      }
+
       if (props.traceMode) {
         const spanSystem = props.span.system
         if (!spanSystem.endsWith(`:${service}`)) {
