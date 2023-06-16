@@ -104,6 +104,7 @@ metrics_from_spans:
       - span.group_id
       - service.name
       - host.name
+      - span.status_code
     annotations:
       - span.event_name
     where: span.is_event
@@ -251,4 +252,4 @@ logs:
 secret_key: 102c1a557c314fc28198acd017960843
 
 # Enable to log HTTP requests and database queries.
-debug: false
+debug: true

@@ -98,6 +98,7 @@ func (s *CHStorage) SelectTimeseries(f *upql.TimeseriesFilter) ([]upql.Timeserie
 		ColumnExpr("metric").
 		ColumnExpr("groupArray(toFloat64(value)) AS value").
 		ColumnExpr("groupArray(time_) AS time").
+		ColumnExpr("any(annotations) AS annotations").
 		TableExpr("(?)", subq).
 		GroupExpr("metric").
 		Limit(10000)
@@ -160,6 +161,7 @@ func (s *CHStorage) subquery(
 	q = q.
 		ColumnExpr("toStartOfInterval(time, INTERVAL ? minute) AS time_",
 			s.conf.GroupingPeriod.Minutes()).
+		ColumnExpr("any(annotations) AS annotations").
 		GroupExpr("time_").
 		OrderExpr("time_")
 
@@ -179,6 +181,7 @@ func (s *CHStorage) subquery(
 
 		q = s.db.NewSelect().
 			ColumnExpr("metric").
+			ColumnExpr("any(annotations) AS annotations").
 			TableExpr("(?)", q).
 			GroupExpr("metric")
 	}
@@ -438,6 +441,14 @@ func (s *CHStorage) newTimeseries(
 		if len(m) > 0 {
 			ts.Annotations = m
 		}
+		//if annoJson, ok := m["annotations"].(string); ok {
+		//	annotations := make(map[string]string)
+		//	if err := json.Unmarshal([]byte(annoJson), &annotations); err == nil {
+		//		for k, v := range annotations {
+		//			ts.Annotations[k] = v
+		//		}
+		//	}
+		//}
 	}
 
 	return timeseries, nil

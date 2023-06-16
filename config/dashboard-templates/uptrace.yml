@@ -79,7 +79,7 @@ grid:
     query:
       - group by span.group_id
       - per_min($events)
-      - where span.is_error = 1
+      - where span.status_code = 'error'
 
 ---
 schema: v1

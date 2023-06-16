@@ -21,7 +21,9 @@
         <template #default="{ metrics, value, time }">
           <template v-for="attrKey in grouping">
             <td v-if="attrKey === 'span.group_id'" :key="attrKey">
-              <router-link :to="spanListRouteFor(item)">{{ item }}</router-link>
+              <router-link :to="spanListRouteFor(item)">{{
+                spanName(item)
+              }}</router-link>
             </td>
             <td v-else-if="attrKey === 'http.route'" :key="attrKey">
               <router-link :to="spanListRouteForHttpRoute(item)">{{ item[attrKey] }}</router-link>
@@ -124,13 +126,28 @@ export default defineComponent({
 
     function spanListRouteFor(item: TableItem) {
       const query = exploreAttr(AttrKey.spanGroupId)
+      console.log(query)
       const groupId = item[AttrKey.spanGroupId]
       return {
-        name: 'SpanList',
+        name: item.metric == 'uptrace.tracing.spans' ? 'SpanList' : 'EventList',
         query: {
           query: `${query} | where ${AttrKey.spanGroupId} = ${groupId}`,
         },
       }
+    }
+
+    function spanName(item: TableItem) {
+      if (item['annotations'] !== undefined) {
+        const annotations = JSON.parse(item['annotations'].toString())
+        if (annotations['span.name'] !== undefined) {
+          return annotations['span.name']
+        } else if (annotations['span.event_name'] !== undefined) {
+          return annotations['span.event_name']
+        } else {
+          return annotations
+        }
+      }
+      return item
     }
 
     function spanListRouteForHttpRoute(item: TableItem) {
@@ -151,7 +168,7 @@ export default defineComponent({
       }
     }
 
-    return { AttrKey, grouping, aggColumns, headers, spanListRouteFor, eventOrSpanName, spanListRouteForHttpRoute }
+    return { AttrKey, grouping, aggColumns, headers, spanListRouteFor, eventOrSpanName, spanListRouteForHttpRoute, spanName }
   },
 })
 
