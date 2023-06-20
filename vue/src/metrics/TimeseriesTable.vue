@@ -28,9 +28,10 @@
             <td v-else-if="attrKey === 'http.route'" :key="attrKey">
               <router-link :to="spanListRouteForHttpRoute(item)">{{ item[attrKey] }}</router-link>
             </td>
-            <td v-else :key="attrKey">
+            <td v-else-if="attrKey !== 'service.name'" :key="attrKey">
               <router-link :to="spanListRouteForAllAttr(item)">{{ item[attrKey] }}</router-link>
             </td>
+            <td v-else :key="attrKey">{{ item[attrKey] }}</td>
           </template>
 
           <td v-for="col in aggColumns" :key="col.name" class="text-subtitle-2">
@@ -172,10 +173,10 @@ export default defineComponent({
 
     function spanListRouteForAllAttr(item: TableItem) {
       const where = []
-      if (props.gridQuery !== undefined) {
+      if (props.gridQuery != '') {
         where.push(props.gridQuery.split(' ').slice(1).join(' '))
       }
-      where.push(item['_query'].split(" ").slice(1).join(" "))
+      where.push(item['_query'].split(' ').slice(1).join(' '))
       return {
         name: 'SpanList',
         query: {
