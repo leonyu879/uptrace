@@ -164,7 +164,7 @@ export default defineComponent({
         where.push(`span.status_message = ${item.errorCode}`)
       }
       return {
-        name: 'SpanList',
+        name: 'SpanGroupList',
         query: {
           query: `${query} | where ${where.join(' and ')}`,
         },
@@ -172,15 +172,16 @@ export default defineComponent({
     }
 
     function spanListRouteForAllAttr(item: TableItem) {
+      const query = exploreAttr(AttrKey.spanGroupId)
       const where = []
       if (props.gridQuery != '') {
         where.push(props.gridQuery.split(' ').slice(1).join(' '))
       }
       where.push(item['_query'].split(' ').slice(1).join(' '))
       return {
-        name: 'SpanList',
+        name: 'SpanGroupList',
         query: {
-          query: `where ${where.join(' and ')}`,
+          query: `${query} | where ${where.join(' and ')}`,
         },
       }
     }
