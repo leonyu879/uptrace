@@ -48,19 +48,21 @@
 
       <v-col cols="auto">
         <div class="mb-0">
-          <v-btn v-if="meta.traceRoute" depressed small :to="meta.traceRoute" exact>
-            View trace
+          <v-btn v-if="traceRoute" depressed small :to="traceRoute" exact> View trace </v-btn>
+          <v-btn v-if="spanGroupRoute" depressed small :to="spanGroupRoute" exact class="ml-2">
+            View spans
           </v-btn>
-          <v-btn
-            v-if="meta.spanGroupRoute"
-            depressed
-            small
-            :to="meta.spanGroupRoute"
-            exact
+
+          <slot v-if="$slots['append-action']" name="append-action" />
+
+          <NewMonitorMenu
+            v-else
+            :name="`${span.system} > ${span.displayName}`"
+            :where="`where ${AttrKey.spanGroupId} = '${span.groupId}'`"
+            :events-mode="isEvent"
+            verbose
             class="ml-2"
-          >
-            View group
-          </v-btn>
+          />
         </div>
       </v-col>
     </v-row>
@@ -81,7 +83,12 @@
 
           <v-tabs-items v-model="activeTab">
             <v-tab-item value="attrs" class="pa-4">
-              <AttrsTable :date-range="dateRange" :span="span" />
+              <SpanAttrs
+                :date-range="dateRange"
+                :attrs="span.attrs"
+                :system="span.system"
+                :group-id="span.groupId"
+              />
             </v-tab-item>
 
             <v-tab-item value="dbStatement">
@@ -111,31 +118,28 @@
 
 <script lang="ts">
 import { format } from 'sql-formatter'
-import { defineComponent, ref, computed, proxyRefs, PropType } from 'vue'
+import { defineComponent, ref, computed, PropType } from 'vue'
 
 // Composables
-import { useRouter } from '@/use/router'
+import { useRoute } from '@/use/router'
 import { UseDateRange } from '@/use/date-range'
-import { createUqlEditor } from '@/use/uql'
+import { createUqlEditor, useQueryStore } from '@/use/uql'
 
 // Components
+import NewMonitorMenu from '@/tracing/NewMonitorMenu.vue'
 import LoadPctileChart from '@/components/LoadPctileChart.vue'
-import AttrsTable from '@/tracing/AttrsTable.vue'
+import SpanAttrs from '@/tracing/SpanAttrs.vue'
 import EventPanels from '@/tracing/EventPanels.vue'
 
 // Utilities
 import { AttrKey, isEventSystem } from '@/models/otel'
 import { spanName, Span } from '@/models/span'
 
-interface Props {
-  dateRange: UseDateRange
-  span: Span
-}
-
 export default defineComponent({
   name: 'SpanCard',
   components: {
-    AttrsTable,
+    NewMonitorMenu,
+    SpanAttrs,
     EventPanels,
     LoadPctileChart,
   },
@@ -156,13 +160,20 @@ export default defineComponent({
   },
 
   setup(props) {
+    const route = useRoute()
+    const { where } = useQueryStore()
     const activeTab = ref('attrs')
+
+    const isEvent = computed((): boolean => {
+      return isEventSystem(props.span.system)
+    })
 
     const axiosParams = computed(() => {
       return {
         ...props.dateRange.axiosParams(),
         system: props.span.system,
         group_id: props.span.groupId,
+        query: where.value,
       }
     })
 
@@ -182,10 +193,46 @@ export default defineComponent({
       return props.span.attrs[AttrKey.exceptionStacktrace] ?? ''
     })
 
+    const traceRoute = computed(() => {
+      if (props.span.standalone) {
+        return null
+      }
+      if (route.value.name === 'TraceShow' && route.value.params.traceId === props.span.traceId) {
+        return null
+      }
+
+      return {
+        name: 'TraceShow',
+        params: {
+          traceId: props.span.traceId,
+        },
+      }
+    })
+
+    const spanGroupRoute = computed(() => {
+      switch (route.value.name) {
+        case 'SpanList':
+        case 'SpanGroupList':
+          return undefined
+      }
+
+      return {
+        name: 'SpanList',
+        query: {
+          ...props.dateRange.queryParams(),
+          system: props.span.system,
+          query: createUqlEditor()
+            .exploreAttr(AttrKey.spanGroupId, isEvent.value)
+            .where(AttrKey.spanGroupId, '=', props.span.groupId)
+            .toString(),
+        },
+      }
+    })
+
     return {
       AttrKey,
-      meta: useMeta(props),
       activeTab,
+      isEvent,
 
       axiosParams,
 
@@ -193,54 +240,13 @@ export default defineComponent({
       dbStatementPretty,
       excStacktrace,
 
+      spanGroupRoute,
+      traceRoute,
+
       spanName,
     }
   },
 })
-
-function useMeta(props: Props) {
-  const { route } = useRouter()
-
-  const traceRoute = computed(() => {
-    if (props.span.standalone) {
-      return null
-    }
-    if (route.value.name === 'TraceShow' && route.value.params.traceId === props.span.traceId) {
-      return null
-    }
-
-    return {
-      name: 'TraceShow',
-      params: {
-        traceId: props.span.traceId,
-      },
-    }
-  })
-
-  const spanGroupRoute = computed(() => {
-    switch (route.value.name) {
-      case 'SpanList':
-      case 'EventList':
-      case 'SpanGroupList':
-      case 'EventGroupList':
-        return undefined
-    }
-
-    return {
-      name: isEventSystem(props.span.system) ? 'EventList' : 'SpanList',
-      query: {
-        ...props.dateRange.queryParams(),
-        system: props.span.system,
-        query: createUqlEditor()
-          .exploreAttr(AttrKey.spanGroupId, isEventSystem(props.span.system))
-          .where(AttrKey.spanGroupId, '=', props.span.groupId)
-          .toString(),
-      },
-    }
-  })
-
-  return proxyRefs({ spanGroupRoute, traceRoute })
-}
 </script>
 
 <style lang="scss" scoped></style>

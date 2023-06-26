@@ -20,7 +20,7 @@
         :plain-columns="plainColumns"
         :plottable-columns="plottableColumns"
         :plotted-columns="plottedColumns"
-        :axios-params="internalAxiosParams"
+        :axios-params="axiosParams"
         :headers="headers"
         :column-map="columnMap"
         :group="item"
@@ -36,7 +36,7 @@
           <SpansList
             :events-mode="eventsModeFor(item)"
             :uql="uql"
-            :axios-params="internalAxiosParams"
+            :axios-params="axiosParams"
             :where="item._query"
           />
         </td>
@@ -218,13 +218,6 @@ export default defineComponent({
       return colMap
     })
 
-    const internalAxiosParams = computed(() => {
-      if (!props.isResolved) {
-        return { _: undefined }
-      }
-      return props.axiosParams
-    })
-
     function hasColumn(name: string): boolean {
       if (props.groups.length) {
         const item = props.groups[0]
@@ -276,7 +269,6 @@ export default defineComponent({
       plainColumns,
       headers,
       columnMap,
-      internalAxiosParams,
 
       eventsModeFor,
     }

@@ -3,12 +3,13 @@
     <v-toolbar flat color="light-blue lighten-5">
       <v-toolbar-title>Slowest groups</v-toolbar-title>
       <v-spacer />
-      <v-btn :to="groupListRoute" small class="primary">View in groupsr</v-btn>
+      <v-btn :to="groupListRoute" small class="primary">View groups</v-btn>
     </v-toolbar>
 
     <v-container fluid>
       <GroupsList
         :date-range="dateRange"
+        :systems="systems"
         :loading="groups.loading"
         :is-resolved="groups.status.isResolved()"
         :groups="groups.items"
@@ -17,8 +18,8 @@
         :plotted-columns="plottedColumns"
         show-plotted-column-items
         :order="groups.order"
-        :axios-params="internalAxiosParams"
         show-system
+        :axios-params="groups.axiosParams"
       />
     </v-container>
   </v-card>
@@ -28,16 +29,15 @@
 import { defineComponent, computed, PropType } from 'vue'
 
 // Composables
-import { useRoute } from '@/use/router'
 import { UseDateRange } from '@/use/date-range'
-import { createUqlEditor } from '@/use/uql'
+import { createUqlEditor, useQueryStore } from '@/use/uql'
 import { useGroups } from '@/tracing/use-explore-spans'
 
 // Components
 import GroupsList from '@/tracing/GroupsList.vue'
 
 // Utilities
-import { SystemName, AttrKey } from '@/models/otel'
+import { AttrKey } from '@/models/otel'
 
 export default defineComponent({
   name: 'OverviewSlowestGroups',
@@ -48,6 +48,10 @@ export default defineComponent({
       type: Object as PropType<UseDateRange>,
       required: true,
     },
+    systems: {
+      type: Array as PropType<string[]>,
+      required: true,
+    },
     axiosParams: {
       type: Object,
       required: true,
@@ -55,22 +59,17 @@ export default defineComponent({
   },
 
   setup(props) {
-    const route = useRoute()
-    const query = createUqlEditor().exploreAttr(AttrKey.spanGroupId).toString()
+    const { where } = useQueryStore()
 
-    const internalAxiosParams = computed(() => {
-      return {
-        ...props.axiosParams,
-        query: [query, route.value.query.query].filter((v) => v).join(' | '),
-      }
+    const query = computed(() => {
+      return createUqlEditor().exploreAttr(AttrKey.spanGroupId).add(where.value).toString()
     })
 
     const groups = useGroups(
       () => {
-        const { projectId } = route.value.params
         return {
-          url: `/api/v1/tracing/${projectId}/groups`,
-          params: internalAxiosParams.value,
+          ...props.axiosParams,
+          query: query.value,
         }
       },
       {
@@ -80,24 +79,23 @@ export default defineComponent({
         },
       },
     )
+    groups.order.syncQueryParams()
 
     const plottedColumns = [AttrKey.spanCountPerMin, `p50(${AttrKey.spanDuration})`]
     const groupListRoute = computed(() => {
       return {
         name: 'SpanGroupList',
         query: {
-          ...route.value.query,
           ...groups.order.queryParams(),
-          query,
+          system: props.systems,
+          query: query.value,
         },
       }
     })
 
     return {
-      SystemName,
       AttrKey,
 
-      internalAxiosParams,
       groups,
 
       plottedColumns,

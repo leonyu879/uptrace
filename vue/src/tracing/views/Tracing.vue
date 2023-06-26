@@ -80,7 +80,8 @@ import { useTitle } from '@vueuse/core'
 import { UseDateRange } from '@/use/date-range'
 import { useUser } from '@/org/use-users'
 import { useSystems, SystemsFilter } from '@/tracing/system/use-systems'
-import { useUql } from '@/use/uql'
+import { useUql, useProvideQueryStore } from '@/use/uql'
+
 
 // Components
 import DateRangePicker from '@/components/date/DateRangePicker.vue'
@@ -146,6 +147,7 @@ export default defineComponent({
     const user = useUser()
 
     const uql = useUql()
+    useProvideQueryStore(uql)
     uql.syncQueryParams()
 
     const systems = useSystems(() => {

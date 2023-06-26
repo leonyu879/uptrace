@@ -53,7 +53,7 @@
               show-plotted-column-items
               :order="groups.order"
               :show-system="showSystem"
-              :axios-params="internalAxiosParams"
+              :axios-params="groups.axiosParams"
               @update:num-group="numGroup = $event"
             />
           </v-container>
@@ -110,11 +110,7 @@ export default defineComponent({
     const { route } = useRouter()
 
     const groups = useGroups(() => {
-      const { projectId } = route.value.params
-      return {
-        url: `/api/v1/tracing/${projectId}/groups`,
-        params: props.axiosParams,
-      }
+      return props.axiosParams
     })
 
     const searchInput = shallowRef('')
