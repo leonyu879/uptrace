@@ -114,6 +114,8 @@ type ChartColumnParams struct {
 	ColumnMap     map[string]*MetricColumn    `json:"columnMap"`
 	TimeseriesMap map[string]*TimeseriesStyle `json:"timeseriesMap"`
 	Legend        *ChartLegend                `json:"legend"`
+	Sort          string                      `json:"sort"`
+	TopN          int                         `json:"topN"`
 }
 
 type TimeseriesStyle struct {

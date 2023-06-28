@@ -114,6 +114,8 @@
               :loading="timeseries.loading"
               :resolved="timeseries.status.isResolved()"
               :timeseries="styledTimeseries"
+              :order="uql.order"
+              :topN="uql.topN"
               :time="timeseries.time"
               :chart-kind="gridColumn.params.chartKind"
               :legend="gridColumn.params.legend"
@@ -411,6 +413,36 @@ export default defineComponent({
       () => uql.query,
       (query) => {
         props.gridColumn.params.query = query
+      },
+    )
+
+    watch(
+      () => props.gridColumn.params.sort,
+      (sort) => {
+        uql.order = sort
+      },
+      { immediate: true },
+    )
+
+    watch(
+      () => uql.order,
+      (order) => {
+        props.gridColumn.params.sort = order
+      },
+    )
+
+    watch(
+      () => props.gridColumn.params.topN,
+      (topN) => {
+        uql.topN = topN
+      },
+      { immediate: true },
+    )
+
+    watch(
+      () => uql.topN,
+      (topN) => {
+        props.gridColumn.params.topN = topN
       },
     )
 

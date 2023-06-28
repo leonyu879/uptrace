@@ -3,6 +3,8 @@
     :loading="timeseries.loading"
     :resolved="timeseries.status.isResolved()"
     :timeseries="styledTimeseries"
+    :order="gridColumn.params.sort"
+    :topN="gridColumn.params.topN"
     :time="timeseries.time"
     :chart-kind="gridColumn.params.chartKind"
     :legend="legend"

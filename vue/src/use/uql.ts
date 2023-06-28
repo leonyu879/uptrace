@@ -32,6 +32,8 @@ export type UseUql = ReturnType<typeof useUql>
 export function useUql(queryValue = '') {
   const rawMode = shallowRef(false)
   const parts = shallowRef<QueryPart[]>([])
+  const _order = shallowRef('desc')
+  const _topN = shallowRef(5)
 
   const query = computed({
     set(s: string) {
@@ -48,6 +50,24 @@ export function useUql(queryValue = '') {
       .filter((part) => /where\s+/i.test(part.query))
       .map((part) => part.query)
       .join(QUERY_PART_SEP)
+  })
+
+  const order = computed({
+    set(o: string) {
+      _order.value = o
+    },
+    get(): string {
+      return _order.value
+    },
+  })
+
+  const topN = computed({
+    set(n: number) {
+      _topN.value = n
+    },
+    get(): number {
+      return _topN.value
+    },
   })
 
   function addPart(part: QueryPart) {
@@ -115,6 +135,8 @@ export function useUql(queryValue = '') {
     whereQuery,
     parts,
 
+    order,
+    topN,
     addPart,
     removePart,
     cleanup,

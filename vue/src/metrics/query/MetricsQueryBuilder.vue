@@ -26,6 +26,8 @@
     <v-btn text class="v-btn--filter" @click="uql.rawMode = !uql.rawMode">{{
       uql.rawMode ? 'Cancel' : 'Edit'
     }}</v-btn>
+    <MetricsSort :uql="uql" :attr-keys="keysDs.values" :disabled="disabled" />
+    <MetricsTopN :uql="uql" :attr-keys="keysDs.values" :disabled="disabled" />
   </UptraceQuery>
 </template>
 
@@ -46,10 +48,14 @@ import DashWhereBtn from '@/metrics/query/DashWhereBtn.vue'
 import MetricsWhereMenu from '@/metrics/query/MetricsWhereMenu.vue'
 import MetricsAggMenu from '@/metrics/query/MetricsAggMenu.vue'
 import QueryHelpDialog from '@/metrics/query/QueryHelpDialog.vue'
+import MetricsSort from '@/metrics/query/MetricsSort.vue'
+import MetricsTopN from "@/metrics/query/MetricsTopN.vue";
 
 export default defineComponent({
   name: 'MetricsQueryBuilder',
   components: {
+    MetricsTopN,
+    MetricsSort,
     UptraceQuery,
     DashGroupingMenu,
     MetricsAggMenu,

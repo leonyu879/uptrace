@@ -51,6 +51,8 @@ export interface ChartColumnParams {
   chartKind: ChartKind
   metrics: MetricAlias[]
   query: string
+  sort: string
+  topN: number
   columnMap: Record<string, MetricColumn>
   timeseriesMap: Record<string, TimeseriesStyle>
   legend: ChartLegend

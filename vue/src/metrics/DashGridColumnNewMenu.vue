@@ -81,6 +81,8 @@ export default defineComponent({
           chartKind: ChartKind.Line,
           metrics: [],
           query: '',
+          sort: 'asc',
+          topN: 5,
           columnMap: {},
           timeseriesMap: {},
           legend: defaultChartLegend(),

@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-wrap justify-center text-caption" :class="`flex-${direction}`">
     <div
-      v-for="item in sortTimeseries(timeseries)"
+      v-for="item in sortedTimeseries"
       :key="item.name"
       class="mx-2 d-flex align-center cursor-pointer"
       :class="{ 'text--secondary': !isSelected(item) }"
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, shallowRef, watch, PropType } from 'vue'
+import { defineComponent, shallowRef, watch, PropType, computed } from "vue";
 
 // Utilities
 import { StyledTimeseries, LegendValue } from '@/metrics/types'
@@ -48,32 +48,57 @@ export default defineComponent({
       type: String,
       default: 'row',
     },
+    order: {
+      type: String,
+      default: 'desc',
+    },
+    topN: {
+      type: Number,
+      default: 5,
+    },
   },
 
   setup(props, ctx) {
-    const selectedTimeseries = shallowRef<StyledTimeseries[]>([])
+    const timeseries = shallowRef<StyledTimeseries[]>(props.timeseries)
+    const sortedTimeseries = computed(() => {
+      return sortTimeseries(timeseries.value, props.order, props.topN)
+    })
     watch(
       () => props.timeseries,
-      (timeseries) => (selectedTimeseries.value = timeseries),
+      (tss) => (timeseries.value = tss),
       { immediate: true },
     )
-    watch(selectedTimeseries, (selectedTimeseries) => ctx.emit('current-items', selectedTimeseries))
+    watch(
+      () => props.order,
+      (order) => {
+        timeseries.value = sortTimeseries(props.timeseries, order, props.topN)
+      },
+      {immediate: true},
+    )
+    watch(
+      () => props.topN,
+      (topN) => {
+        timeseries.value = sortTimeseries(props.timeseries, props.order, topN)
+      },
+      {immediate: true},
+    )
+    watch(timeseries, (selectedTimeseries) => ctx.emit('current-items', selectedTimeseries))
 
     function toggle(ts: StyledTimeseries) {
-      const items = selectedTimeseries.value.slice()
+      const items = timeseries.value.slice()
       const index = items.findIndex((item) => item.id === ts.id)
       if (index >= 0) {
         items.splice(index, 1)
       } else {
         items.push(ts)
       }
-      selectedTimeseries.value = items
+      timeseries.value = items
     }
 
     function select(ts: StyledTimeseries) {
-      const items = selectedTimeseries.value.slice()
+      const items = timeseries.value.slice()
       if (items.length == props.timeseries.length) {
-        selectedTimeseries.value = [ts]
+        timeseries.value = [ts]
         return
       }
       const index = items.findIndex((item) => item.id === ts.id)
@@ -83,30 +108,36 @@ export default defineComponent({
         items.splice(index, 1)
       }
       if (items.length == 0) {
-        selectedTimeseries.value = props.timeseries
+        timeseries.value = props.timeseries
       } else {
-        selectedTimeseries.value = items
+        timeseries.value = items
       }
     }
 
     function isSelected(ts: StyledTimeseries): boolean {
-      const index = selectedTimeseries.value.findIndex((item) => item.id === ts.id)
+      const index = timeseries.value.findIndex((item) => item.id === ts.id)
       return index >= 0
     }
 
-    function sortTimeseries(tsList: StyledTimeseries[]): StyledTimeseries[] {
+    function sortTimeseries(timeseries: StyledTimeseries[], order: string, topN: number): StyledTimeseries[] {
       const key = props.values[0]
-      return props.timeseries.sort(function(a, b) {
-        return b[key] - a[key]
-      })
+      if (order == 'desc') {
+        return props.timeseries.slice(0, topN).sort(function(a, b) {
+          return b[key] - a[key]
+        })
+      } else {
+        return props.timeseries.slice(0, topN).sort(function(a, b) {
+          return a[key] - b[key]
+        })
+      }
     }
 
     return {
-      selectedTimeseries,
+      selectedTimeseries: timeseries,
       toggle,
       select,
       isSelected,
-      sortTimeseries,
+      sortedTimeseries,
 
       truncateMiddle,
     }

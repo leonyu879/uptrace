@@ -34,6 +34,8 @@
           :timeseries="timeseries"
           :values="legend.values"
           :direction="legend.placement === LegendPlacement.Bottom ? 'row' : 'column'"
+          :order="order"
+          :topN="topN"
           @current-items="currentTimeseries = $event"
           @hover:item="eventBus.emit('hover', $event)"
         />
@@ -107,6 +109,14 @@ export default defineComponent({
       type: Number,
       default: 200,
     },
+    order: {
+      type: String,
+      default: 'desc',
+    },
+    topN: {
+      type: Number,
+      default: 5,
+    },
   },
 
   setup(props, ctx) {
@@ -157,7 +167,7 @@ export default defineComponent({
       if (currentTimeseries.value) {
         return currentTimeseries.value
       }
-      return props.timeseries
+      return props.timeseries.slice(0, props.topN)
     })
 
     return {
