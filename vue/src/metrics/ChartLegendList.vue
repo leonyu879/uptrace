@@ -122,13 +122,18 @@ export default defineComponent({
     function sortTimeseries(timeseries: StyledTimeseries[], order: string, topN: number): StyledTimeseries[] {
       const key = props.values[0]
       if (order == 'desc') {
-        return props.timeseries.slice(0, topN).sort(function(a, b) {
-          return b[key] - a[key]
-        })
+        return props.timeseries
+          .sort(function (a, b) {
+            return b[key] - a[key]
+          })
+          .slice(0, topN)
       } else {
-        return props.timeseries.slice(0, topN).sort(function(a, b) {
-          return a[key] - b[key]
-        })
+        return props.timeseries
+          .slice(0, topN)
+          .sort(function (a, b) {
+            return a[key] - b[key]
+          })
+          .slice(0, topN)
       }
     }
 
