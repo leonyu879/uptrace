@@ -69,8 +69,8 @@ import {
   ChartLegend,
   LegendType,
   LegendPlacement,
-  StyledTimeseries,
-} from '@/metrics/types'
+  StyledTimeseries, sortTimeseries
+} from "@/metrics/types";
 
 export default defineComponent({
   name: 'GridColumnChart',
@@ -167,7 +167,7 @@ export default defineComponent({
       if (currentTimeseries.value) {
         return currentTimeseries.value
       }
-      return props.timeseries.slice(0, props.topN)
+      return sortTimeseries(props.timeseries, props.order, props.topN)
     })
 
     return {

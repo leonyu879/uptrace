@@ -25,7 +25,7 @@
 import { defineComponent, shallowRef, watch, PropType, computed } from "vue";
 
 // Utilities
-import { StyledTimeseries, LegendValue } from '@/metrics/types'
+import { StyledTimeseries, LegendValue, sortTimeseries } from '@/metrics/types'
 import { truncateMiddle } from '@/util/string'
 
 export default defineComponent({
@@ -117,24 +117,6 @@ export default defineComponent({
     function isSelected(ts: StyledTimeseries): boolean {
       const index = timeseries.value.findIndex((item) => item.id === ts.id)
       return index >= 0
-    }
-
-    function sortTimeseries(timeseries: StyledTimeseries[], order: string, topN: number): StyledTimeseries[] {
-      const key = props.values[0]
-      if (order == 'desc') {
-        return props.timeseries
-          .sort(function (a, b) {
-            return b[key] - a[key]
-          })
-          .slice(0, topN)
-      } else {
-        return props.timeseries
-          .slice(0, topN)
-          .sort(function (a, b) {
-            return a[key] - b[key]
-          })
-          .slice(0, topN)
-      }
     }
 
     return {

@@ -277,3 +277,19 @@ export function updateColumnMap(colMap: Record<string, MetricColumn>, columns: C
     }
   }
 }
+
+export function sortTimeseries(timeseries: StyledTimeseries[], order: string, topN: number): StyledTimeseries[] {
+  if (order == 'desc') {
+    return timeseries
+      .sort(function (a: StyledTimeseries, b: StyledTimeseries) {
+        return b.avg - a.avg
+      })
+      .slice(0, topN)
+  } else {
+    return timeseries
+      .sort(function (a: StyledTimeseries, b: StyledTimeseries) {
+        return a.avg - b.avg
+      })
+      .slice(0, topN)
+  }
+}
