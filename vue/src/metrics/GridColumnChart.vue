@@ -165,7 +165,7 @@ export default defineComponent({
     const currentTimeseries = shallowRef<StyledTimeseries[]>()
     const activeTimeseries = computed(() => {
       if (currentTimeseries.value) {
-        return currentTimeseries.value
+        return sortTimeseries(currentTimeseries.value, props.order, props.topN)
       }
       return sortTimeseries(props.timeseries, props.order, props.topN)
     })
