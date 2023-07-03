@@ -16,7 +16,7 @@ axios.interceptors.response.use(
   (resp) => resp,
   (error) => {
     if (error.response?.status === 401) {
-      redirectToLogin()
+      redirectToLogin(window.location.href)
     }
     return Promise.reject(error)
   },

@@ -211,6 +211,7 @@ type Config struct {
 		Users      []User                `yaml:"users" json:"users"`
 		Cloudflare []*CloudflareProvider `yaml:"cloudflare" json:"cloudflare"`
 		OIDC       []*OIDCProvider       `yaml:"oidc" json:"oidc"`
+		Oauth      *OauthConfig          `yaml:"oauth" json:"oauth"`
 	} `yaml:"auth" json:"auth"`
 
 	Projects []Project `yaml:"projects"`

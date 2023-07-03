@@ -39,6 +39,7 @@ func registerRoutes(ctx context.Context, app *bunapp.App) {
 
 		g.POST("/login", userHandler.Login)
 		g.POST("/logout", userHandler.Logout)
+		g.GET("/oauth", userHandler.Oauth)
 
 		g = g.Use(middleware.User)
 

@@ -26,6 +26,12 @@ type OIDCProvider struct {
 	Claim        string   `yaml:"claim" json:"claim"`
 }
 
+type OauthConfig struct {
+	Host      string `yaml:"host" json:"Host"`
+	AuthPath  string `yaml:"auth_path" json:"auth_path"`
+	TokenPath string `yaml:"token_path" json:"token_path"`
+}
+
 type Project struct {
 	ID                  uint32   `yaml:"id"`
 	Name                string   `yaml:"name"`

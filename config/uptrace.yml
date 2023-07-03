@@ -89,6 +89,7 @@ metrics_from_spans:
       - span.group_id
       - service.name
       - host.name
+      - http.route
       - span.status_code
     annotations:
       - span.name
@@ -146,6 +147,10 @@ auth:
   #     # The OIDC UserInfo claim to use as the user's username.
   #     # Defaults to 'preferred_username'.
   #     claim: preferred_username
+  oauth:
+    host: ""
+    auth_path: ""
+    token_path: ""
 
 ##
 ## Various options to tweak ClickHouse schema.
@@ -252,4 +257,4 @@ logs:
 secret_key: 102c1a557c314fc28198acd017960843
 
 # Enable to log HTTP requests and database queries.
-debug: true
+debug: false

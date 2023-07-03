@@ -395,7 +395,7 @@ func handleStaticFiles(app *bunapp.App, fsys fs.FS) {
 	conf := app.Config()
 	router := app.Router()
 
-	fsys = newVueFS(fsys, conf.Site.Path)
+	fsys = newVueFS(fsys, conf.Site.Path, fmt.Sprintf("%s%s", conf.Auth.Oauth.Host, conf.Auth.Oauth.AuthPath))
 	httpFS := http.FS(fsys)
 	fileServer := http.FileServer(httpFS)
 
@@ -439,16 +439,18 @@ func genSampleTrace() {
 
 //------------------------------------------------------------------------------
 
-func newVueFS(fsys fs.FS, publicPath string) *vueFS {
+func newVueFS(fsys fs.FS, publicPath, oauthUrl string) *vueFS {
 	return &vueFS{
 		fs:         fsys,
 		publicPath: publicPath,
+		oauthUrl:   oauthUrl,
 	}
 }
 
 type vueFS struct {
 	fs         fs.FS
 	publicPath string
+	oauthUrl   string
 }
 
 var _ fs.FS = (*vueFS)(nil)
@@ -470,6 +472,7 @@ func (v *vueFS) Open(name string) (fs.File, error) {
 		return nil, err
 	}
 	data = bytes.ReplaceAll(data, []byte("/UPTRACE_PLACEHOLDER/"), []byte(v.publicPath))
+	data = bytes.ReplaceAll(data, []byte("/OAUTH_HOST_PLACEHOLDER/"), []byte(v.oauthUrl))
 
 	return &vueFile{
 		f:  f,

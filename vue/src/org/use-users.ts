@@ -81,8 +81,14 @@ export const useUser = defineStore(() => {
   })
 })
 
-export function redirectToLogin() {
-  router.push({ name: 'Login' }).catch(() => {})
+export function redirectToLogin(redirect = '') {
+  if (redirect === '') {
+    router.push({ name: 'Login' }).catch(() => {})
+  } else {
+    const oauthHost = '/OAUTH_HOST_PLACEHOLDER/'
+    const oauthPath = encodeURI(window.location.protocol + '//' + window.location.host + `/api/v1/users/oauth?redirect=${redirect}`)
+    window.location.href = `${oauthHost}${oauthPath}`
+  }
 }
 
 interface SsoMethod {
