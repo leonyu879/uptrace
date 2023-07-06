@@ -135,7 +135,7 @@ import { UseDateRange } from '@/use/date-range'
 import { useTitle } from '@vueuse/core'
 import { useRoute } from '@/use/router'
 import { useDataSource } from '@/use/datasource'
-import { useUql } from '@/use/uql'
+import { useUql } from "@/use/uql";
 import { useActiveMetrics } from '@/metrics/use-metrics'
 import { useTableQuery, TableItem } from '@/metrics/use-query'
 import { useDashGauges } from '@/metrics/gauge/use-dash-gauges'
@@ -193,6 +193,7 @@ export default defineComponent({
     const route = useRoute()
     const dialog = shallowRef(false)
     const uql = useUql()
+    uql.syncQueryParams()
 
     const dashGauges = useDashGauges(() => {
       return {

@@ -2,7 +2,7 @@
   <v-menu v-model="menu" offset-y :close-on-content-click="false">
     <template #activator="{ on, attrs }">
       <v-btn text class="v-btn--filter" :disabled="disabled" v-bind="attrs" v-on="on">
-        topN
+        TopN
       </v-btn>
     </template>
 

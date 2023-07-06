@@ -279,6 +279,9 @@ export function updateColumnMap(colMap: Record<string, MetricColumn>, columns: C
 }
 
 export function sortTimeseries(timeseries: StyledTimeseries[], order: string, topN: number): StyledTimeseries[] {
+  if (topN === 0) {
+    topN = 5
+  }
   if (order == 'desc') {
     return timeseries
       .sort(function (a: StyledTimeseries, b: StyledTimeseries) {
