@@ -86,6 +86,7 @@
               :columns="tableQuery.columns"
               :order="tableQuery.order"
               :axios-params="tableQuery.axiosParams"
+              :route-for-span-list="false"
               v-on="tableItem.listeners"
             >
             </TimeseriesTable>

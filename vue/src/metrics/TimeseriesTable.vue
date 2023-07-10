@@ -20,15 +20,15 @@
       >
         <template #default="{ metrics, value, time }">
           <template v-for="attrKey in grouping">
-            <td v-if="attrKey === 'span.group_id'" :key="attrKey">
+            <td v-if="routeForSpanList && attrKey === 'span.group_id'" :key="attrKey">
               <router-link :to="spanListRouteFor(item)">{{
                 spanName(item)
               }}</router-link>
             </td>
-            <td v-else-if="attrKey === 'http.route'" :key="attrKey">
+            <td v-else-if="routeForSpanList && attrKey === 'http.route'" :key="attrKey">
               <router-link :to="spanListRouteForHttpRoute(item)">{{ item[attrKey] }}</router-link>
             </td>
-            <td v-else-if="attrKey !== 'service.name'" :key="attrKey">
+            <td v-else-if="routeForSpanList && attrKey !== 'service.name'" :key="attrKey">
               <router-link :to="spanListRouteForAllAttr(item)">{{ item[attrKey] }}</router-link>
             </td>
             <td v-else :key="attrKey">{{ item[attrKey] }}</td>
@@ -105,6 +105,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    routeForSpanList: {
+      type: Boolean,
+      default: true,
+    }
   },
 
   setup(props) {
