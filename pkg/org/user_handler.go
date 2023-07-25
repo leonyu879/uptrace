@@ -91,7 +91,7 @@ func (h *UserHandler) Oauth(w http.ResponseWriter, req bunrouter.Request) error 
 	redirect := query["redirect"]
 	ticket := query["ticket"]
 
-	service := fmt.Sprintf("%s/api/v1/users/oauth?redirect=%s", conf.Site.Addr, redirect[0])
+	service := fmt.Sprintf("%s/api/v1/users/oauth?redirect=%s", conf.Site.Addr, url.QueryEscape(redirect[0]))
 	user, err := h.checkToken(req.Context(), service, ticket[0])
 	if err != nil {
 		return err

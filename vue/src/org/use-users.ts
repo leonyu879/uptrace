@@ -54,6 +54,7 @@ export const useUser = defineStore(() => {
   }
 
   async function getOrLoad() {
+    console.log(window.location.href)
     if (!req) {
       reload()
     }
@@ -85,8 +86,9 @@ export function redirectToLogin(redirect = '') {
   if (redirect === '') {
     router.push({ name: 'Login' }).catch(() => {})
   } else {
+    redirect = encodeURIComponent(redirect)
     const oauthHost = '/OAUTH_HOST_PLACEHOLDER/'
-    const oauthPath = encodeURI(window.location.protocol + '//' + window.location.host + `/api/v1/users/oauth?redirect=${redirect}`)
+    const oauthPath = encodeURI(window.location.protocol + '//' + window.location.host + `/api/v1/users/oauth?redirect=${redirect}`).replace("19876", "14318")
     window.location.href = `${oauthHost}${oauthPath}`
   }
 }
