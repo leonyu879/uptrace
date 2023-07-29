@@ -75,6 +75,7 @@ export default defineComponent({
         yAxis: 0,
 
         gridQueryTemplate: '',
+        link: '',
 
         type: GridColumnType.Chart,
         params: {
@@ -105,6 +106,7 @@ export default defineComponent({
         yAxis: 0,
 
         gridQueryTemplate: '',
+        link: '',
 
         type: GridColumnType.Table,
         params: {
@@ -130,6 +132,7 @@ export default defineComponent({
         yAxis: 0,
 
         gridQueryTemplate: '',
+        link: '',
 
         type: GridColumnType.Heatmap,
         params: {

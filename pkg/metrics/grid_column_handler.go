@@ -92,6 +92,7 @@ type GridColumnIn struct {
 	Description string `json:"description"`
 
 	GridQueryTemplate string `json:"gridQueryTemplate"`
+	Link              string `json:"link"`
 
 	Type   GridColumnType  `json:"type"`
 	Params json.RawMessage `json:"params"`
@@ -103,6 +104,7 @@ func (in *GridColumnIn) Validate(
 	baseCol.Name = in.Name
 	baseCol.Description = in.Description
 	baseCol.GridQueryTemplate = in.GridQueryTemplate
+	baseCol.Link = in.Link
 	baseCol.UpdatedAt = time.Now()
 
 	switch in.Type {
@@ -199,7 +201,7 @@ func (h *GridColumnHandler) Update(w http.ResponseWriter, req bunrouter.Request)
 
 	if _, err := h.PG.NewUpdate().
 		Model(gridCol).
-		Column("name", "description", "grid_query_template", "params", "updated_at").
+		Column("name", "description", "grid_query_template", "link", "params", "updated_at").
 		Where("id = ?", gridCol.ID).
 		Where("project_id = ?", gridCol.ProjectID).
 		Where("dash_id = ?", gridCol.DashID).

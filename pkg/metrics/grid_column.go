@@ -34,6 +34,7 @@ type BaseGridColumn struct {
 	YAxis  int32 `json:"yAxis"`
 
 	GridQueryTemplate string `json:"gridQueryTemplate" bun:",nullzero"`
+	Link              string `json:"link" bun:",nullzero"`
 
 	Type   GridColumnType `json:"type"`
 	Params bunutil.Params `json:"params"`

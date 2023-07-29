@@ -39,6 +39,9 @@
       <v-toolbar-items>
         <v-menu v-model="menu" offset-y>
           <template #activator="{ on: onMenu, attrs }">
+            <v-btn v-if="gridColumn.link != ''" icon v-bind="attrs" @click="jumpLink">
+              <v-icon>mdi-open-in-new</v-icon>
+            </v-btn>
             <v-btn :loading="gridColumnMan.pending" icon v-bind="attrs" v-on="onMenu">
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
@@ -173,6 +176,7 @@ export default defineComponent({
   setup(props, ctx) {
     const menu = shallowRef(false)
     const dialog = shallowRef(false)
+    console.log(props.gridColumn)
 
     const columnError = shallowRef(false)
     const metricMonitorNewRoute = computed(() => {
@@ -210,6 +214,10 @@ export default defineComponent({
       })
     }
 
+    function jumpLink() {
+      window.open(props.gridColumn.link, '_blank')
+    }
+
     return {
       GridColumnType,
 
@@ -222,6 +230,7 @@ export default defineComponent({
       gridColumnMan,
       internalGridColumn,
       del,
+      jumpLink,
     }
   },
 })

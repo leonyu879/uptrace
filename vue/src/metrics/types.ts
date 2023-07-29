@@ -31,6 +31,7 @@ interface BaseGridColumn {
   yAxis: number
 
   gridQueryTemplate: string
+  link: string
 
   type: GridColumnType
   params: unknown

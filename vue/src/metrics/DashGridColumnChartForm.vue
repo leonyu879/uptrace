@@ -249,6 +249,19 @@
                         filled
                         hide-details="auto"
                       />
+                     </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="3" class="mt-4 text--secondary">Link</v-col>
+                    <v-col cols="9">
+                      <v-text-field
+                        v-model="gridColumn.link"
+                        placeholder="https://uptrace.com/spans/1"
+                        hint="Link"
+                        persistent-hint
+                        filled
+                        hide-details="auto"
+                      />
                     </v-col>
                   </v-row>
                 </v-expansion-panel-content>
