@@ -79,7 +79,8 @@ export default defineComponent({
       },
       {
         order: {
-          column: props.eventsMode ? AttrKey.spanTime : AttrKey.spanDuration,
+          // column: props.eventsMode ? AttrKey.spanTime : AttrKey.spanDuration,
+          column: AttrKey.spanTime,
           desc: true,
         },
       },

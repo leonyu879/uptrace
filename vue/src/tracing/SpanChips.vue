@@ -20,6 +20,7 @@
       :title="`${chip.key}: ${chip.value}`"
       class="mb-1"
       :class="{ 'ml-1': i > 0, 'cursor-default': !clickable }"
+      :style="{ 'max-width': '300px', overflow: 'hidden' }"
       @click.stop="$emit('click:chip', chip)"
     >
       {{ chip.text }}
@@ -68,6 +69,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    console.log(props.span)
     const events = computed((): Span[] => {
       return props.span?.events ?? []
     })
