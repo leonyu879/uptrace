@@ -31,7 +31,7 @@ func (h *UserHandler) Current(w http.ResponseWriter, req bunrouter.Request) erro
 	ctx := req.Context()
 	user := UserFromContext(ctx)
 
-	projects, err := SelectProjects(ctx, h.App)
+	projects, err := SelectProjects(ctx, h.App, user)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (h *UserHandler) Oauth(w http.ResponseWriter, req bunrouter.Request) error 
 	ticket := query["ticket"]
 
 	service := fmt.Sprintf("%s/api/v1/users/oauth?redirect=%s", conf.Site.Addr, url.QueryEscape(redirect[0]))
-	user, err := h.checkToken(req.Context(), service, ticket[0])
+	user, err := h.checkToken(req.Context(), service, ticket[0], conf.Auth.DefaultGroup)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (h *UserHandler) Oauth(w http.ResponseWriter, req bunrouter.Request) error 
 	return nil
 }
 
-func (h *UserHandler) checkToken(ctx context.Context, service, token string) (*User, error) {
+func (h *UserHandler) checkToken(ctx context.Context, service, token, defaultGroup string) (*User, error) {
 	conf := h.App.Config()
 	tokenUrl := fmt.Sprintf("%s%s", conf.Auth.Oauth.Host, conf.Auth.Oauth.TokenPath)
 	param := url.Values{}
@@ -144,6 +144,7 @@ func (h *UserHandler) checkToken(ctx context.Context, service, token string) (*U
 					dest := &User{
 						Username: username,
 						Email:    email,
+						Group:    defaultGroup,
 					}
 					if err := dest.SetPassword(fmt.Sprintf("%s_uptrace", email)); err != nil {
 						return nil, err

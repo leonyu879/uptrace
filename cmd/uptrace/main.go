@@ -343,6 +343,7 @@ func loadInitialData(ctx context.Context, app *bunapp.App) error {
 			Email:         src.Email,
 			Avatar:        src.Avatar,
 			NotifyByEmail: src.NotifyByEmail,
+			Group:         conf.Auth.DefaultGroup,
 		}
 		if err := dest.SetPassword(src.Password); err != nil {
 			return err

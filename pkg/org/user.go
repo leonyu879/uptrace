@@ -22,7 +22,8 @@ type User struct {
 	Email  string `json:"email" bun:",nullzero"`
 	Avatar string `json:"avatar" bun:",nullzero"`
 
-	NotifyByEmail bool `json:"notifyByEmail"`
+	NotifyByEmail bool   `json:"notifyByEmail"`
+	Group         string `json:"group"`
 }
 
 func (u *User) Init() error {

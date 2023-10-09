@@ -20,6 +20,14 @@ type Project struct {
 	GroupFuncsByService bool     `json:"groupFuncsByService"`
 }
 
+type GroupProjects struct {
+	bun.BaseModel `bun:"projects,alias:p"`
+
+	ID      uint32 `json:"id" bun:",pk,autoincrement"`
+	Group   string `json:"role"`
+	Project uint32 `json:"project"`
+}
+
 func (p *Project) Init() error {
 	if p.ID == 0 {
 		return errors.New("project id can't be zero")
@@ -76,10 +84,13 @@ func SelectProjectByToken(
 	return project, nil
 }
 
-func SelectProjects(ctx context.Context, app *bunapp.App) ([]*Project, error) {
+func SelectProjects(ctx context.Context, app *bunapp.App, user *User) ([]*Project, error) {
 	projects := make([]*Project, 9)
-	if err := app.PG.NewSelect().
-		Model(&projects).
+	query := app.PG.NewSelect().Model(&projects)
+	if user.Group != "" {
+		query = query.Join("join group_projects gp on gp.project = p.id", "").Where("gp.group = ?", user.Group)
+	}
+	if err := query.
 		Scan(ctx); err != nil {
 		return nil, err
 	}

@@ -116,6 +116,7 @@ auth:
       password: uptrace
     - username: admin
       password: admin
+  default_group: guest
 
   # Cloudflare Zero Trust Access (Identity)
   # See https://developers.cloudflare.com/cloudflare-one/identity/ for more info.
