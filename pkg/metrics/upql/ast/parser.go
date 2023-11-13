@@ -335,6 +335,49 @@ func (p *queryParser) parseQuery() (any, error) {
 	r5_i0_group_end:
 	}
 
+	{
+		var having []Filter
+		_pos1 := p.Pos()
+		{
+			_tok, _err := p.NextToken()
+			if _err != nil {
+				return nil, _err
+			}
+			_match := len(_tok.Text) == 6 && (_tok.Text[0] == 'h' || _tok.Text[0] == 'H') && (_tok.Text[1] == 'a' || _tok.Text[1] == 'A') && (_tok.
+				Text[2] == 'v' || _tok.Text[2] == 'V') && (_tok.Text[3] == 'i' || _tok.Text[3] == 'I') && (_tok.Text[4] == 'n' || _tok.Text[4] == 'N') && (_tok.Text[5] == 'g' || _tok.Text[5] == 'G')
+			if !_match {
+				p.ResetPos(_pos1)
+				goto r6_having_end
+			}
+		}
+		{
+			var _err error
+			having, _err = p.where()
+			if _err != nil && _err != errBacktrack {
+				return nil, _err
+			}
+			_match := _err == nil
+			if !_match {
+				p.ResetPos(_pos1)
+				goto r6_having_end
+			}
+		}
+		{
+			_tok, _err := p.NextToken()
+			if _err != nil {
+				return nil, _err
+			}
+			_match := _tok.ID == EOF_TOKEN
+			if !_match {
+				p.ResetPos(_pos1)
+				having = nil
+				goto r6_having_end
+			}
+		}
+		return &Having{Filters: having}, nil
+	r6_having_end:
+	}
+
 	var filters []Filter
 
 	{
@@ -854,10 +897,44 @@ func (p *queryParser) filterOp() (FilterOp, error) {
 			if _err != nil {
 				return "", _err
 			}
-			_match := _tok.Text == "!"
+			_match := _tok.Text == "<"
 			if !_match {
 				p.ResetPos(_pos1)
 				goto r4_i0_group_end
+			}
+		}
+		return FilterLessThan, nil
+	r4_i0_group_end:
+	}
+
+	{
+		_pos1 := p.Pos()
+		{
+			_tok, _err := p.NextToken()
+			if _err != nil {
+				return "", _err
+			}
+			_match := _tok.Text == ">"
+			if !_match {
+				p.ResetPos(_pos1)
+				goto r5_i0_group_end
+			}
+		}
+		return FilterGraterThan, nil
+	r5_i0_group_end:
+	}
+
+	{
+		_pos1 := p.Pos()
+		{
+			_tok, _err := p.NextToken()
+			if _err != nil {
+				return "", _err
+			}
+			_match := _tok.Text == "!"
+			if !_match {
+				p.ResetPos(_pos1)
+				goto r6_i0_group_end
 			}
 		}
 		{
@@ -868,11 +945,11 @@ func (p *queryParser) filterOp() (FilterOp, error) {
 			_match := _tok.Text == "~"
 			if !_match {
 				p.ResetPos(_pos1)
-				goto r4_i0_group_end
+				goto r6_i0_group_end
 			}
 		}
 		return FilterNotRegexp, nil
-	r4_i0_group_end:
+	r6_i0_group_end:
 	}
 
 	{

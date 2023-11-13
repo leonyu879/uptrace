@@ -30,6 +30,7 @@ type TimeseriesExpr struct {
 	Where      [][]ast.Filter
 	Grouping   []string
 	GroupByAll bool
+	Having     [][]ast.Filter
 
 	Part       *QueryPart
 	Timeseries []Timeseries
@@ -114,7 +115,7 @@ func compile(storage Storage, parts []*QueryPart) []NamedExpr {
 				Expr:  sel,
 				Alias: expr.Expr.Alias,
 			})
-		case *ast.Where, *ast.Grouping:
+		case *ast.Where, *ast.Grouping, *ast.Having:
 			// see below
 		default:
 			panic(fmt.Errorf("unknown ast: %T", expr))
@@ -139,6 +140,10 @@ func compile(storage Storage, parts []*QueryPart) []NamedExpr {
 			if err := c.grouping(expr); err != nil {
 				part.Error.Wrapped = err
 			}
+		case *ast.Having:
+			if err := c.having(expr); err != nil {
+				part.Error.Wrapped = err
+			}
 		}
 	}
 
@@ -159,6 +164,7 @@ func compile(storage Storage, parts []*QueryPart) []NamedExpr {
 				Where:      expr.Where,
 				Grouping:   expr.Grouping,
 				GroupByAll: expr.GroupByAll,
+				Having:     expr.Having,
 			}
 
 			timeseries, err := storage.SelectTimeseries(f)
@@ -324,6 +330,47 @@ func (c *compiler) groupingName(name string) error {
 	}
 
 	if alias != "" && !found {
+		return fmt.Errorf("can't find metric with alias %q", alias)
+	}
+	return nil
+}
+
+func (c *compiler) having(expr *ast.Having) error {
+	var alias string
+
+	for i := range expr.Filters {
+		filter := &expr.Filters[i]
+
+		var filterAlias string
+		filterAlias, filter.LHS = ast.SplitAliasName(filter.LHS)
+
+		if i == 0 {
+			filterAlias = alias
+			continue
+		}
+
+		if filterAlias != alias {
+			return fmt.Errorf("where must reference a single metric: %q != %q", filterAlias, alias)
+		}
+	}
+
+	if alias == "" {
+		for _, ts := range c.timeseries {
+			ts.Having = append(ts.Where, expr.Filters)
+		}
+		return nil
+	}
+
+	var found bool
+
+	for _, ts := range c.timeseries {
+		if ts.Metric == alias {
+			ts.Where = append(ts.Where, expr.Filters)
+			found = true
+		}
+	}
+
+	if !found {
 		return fmt.Errorf("can't find metric with alias %q", alias)
 	}
 	return nil

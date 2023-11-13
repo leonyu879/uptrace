@@ -122,6 +122,7 @@ type TimeseriesFilter struct {
 	Filters    []ast.Filter
 	Where      [][]ast.Filter
 	Grouping   []string
+	Having     [][]ast.Filter
 	GroupByAll bool
 }
 

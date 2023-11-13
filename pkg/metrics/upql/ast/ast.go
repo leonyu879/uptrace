@@ -159,6 +159,10 @@ type Grouping struct {
 	GroupByAll bool
 }
 
+type Having struct {
+	Filters []Filter
+}
+
 //------------------------------------------------------------------------------
 
 type Where struct {
@@ -168,14 +172,16 @@ type Where struct {
 type FilterOp string
 
 const (
-	FilterEqual     FilterOp = "="
-	FilterNotEqual  FilterOp = "!="
-	FilterRegexp    FilterOp = "~"
-	FilterNotRegexp FilterOp = "!~"
-	FilterLike      FilterOp = "like"
-	FilterNotLike   FilterOp = "not like"
-	FilterExists    FilterOp = "exists"
-	FilterNotExists FilterOp = "not exists"
+	FilterEqual      FilterOp = "="
+	FilterNotEqual   FilterOp = "!="
+	FilterLessThan   FilterOp = "<"
+	FilterGraterThan FilterOp = ">"
+	FilterRegexp     FilterOp = "~"
+	FilterNotRegexp  FilterOp = "!~"
+	FilterLike       FilterOp = "like"
+	FilterNotLike    FilterOp = "not like"
+	FilterExists     FilterOp = "exists"
+	FilterNotExists  FilterOp = "not exists"
 )
 
 type BoolOp string

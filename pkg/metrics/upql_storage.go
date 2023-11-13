@@ -158,6 +158,14 @@ func (s *CHStorage) subquery(
 			GroupExpr("attrs_hash")
 	}
 
+	for _, filters := range f.Having {
+		having, err := compileHaving(filters)
+		if err != nil {
+			return nil, err
+		}
+		q = q.Having(having)
+	}
+
 	q = q.
 		ColumnExpr("toStartOfInterval(time, INTERVAL ? minute) AS time_",
 			s.conf.GroupingPeriod.Minutes()).
@@ -249,6 +257,10 @@ func compileFilters(filters []ast.Filter) (string, error) {
 			b = chschema.AppendQuery(b, "? = ?", col, val)
 		case ast.FilterNotEqual:
 			b = chschema.AppendQuery(b, "? != ?", col, val)
+		case ast.FilterLessThan:
+			b = chschema.AppendQuery(b, "? < ?", col, val)
+		case ast.FilterGraterThan:
+			b = chschema.AppendQuery(b, "? < ?", col, val)
 		case ast.FilterRegexp:
 			b = chschema.AppendQuery(b, "match(?, ?)", col, val)
 		case ast.FilterNotRegexp:
@@ -257,6 +269,37 @@ func compileFilters(filters []ast.Filter) (string, error) {
 			b = chschema.AppendQuery(b, "? LIKE ?", col, val)
 		case ast.FilterNotLike:
 			b = chschema.AppendQuery(b, "? NOT LIKE ?", col, val)
+		default:
+			return "", fmt.Errorf("unsupported op: %s", filter.Op)
+		}
+	}
+	return unsafeconv.String(b), nil
+}
+
+func compileHaving(filters []ast.Filter) (string, error) {
+	var b []byte
+	for _, filter := range filters {
+		//col := filter.LHS
+		//
+		var val interface{}
+
+		switch rhs := filter.RHS.(type) {
+		case *ast.Number:
+			val = rhs.Float64()
+		case ast.StringValue:
+			val = rhs.Text
+		default:
+			return "", fmt.Errorf("unknown RHS: %T", rhs)
+		}
+		switch filter.Op {
+		case ast.FilterEqual:
+			b = chschema.AppendQuery(b, "sumWithOverflow(sum) = ?", val)
+		case ast.FilterNotEqual:
+			b = chschema.AppendQuery(b, "sumWithOverflow(sum) != ?", val)
+		case ast.FilterLessThan:
+			b = chschema.AppendQuery(b, "sumWithOverflow(sum) < ?", val)
+		case ast.FilterGraterThan:
+			b = chschema.AppendQuery(b, "sumWithOverflow(sum) > ?", val)
 		default:
 			return "", fmt.Errorf("unsupported op: %s", filter.Op)
 		}
