@@ -56,7 +56,7 @@ import LoadPctileChart from '@/components/LoadPctileChart.vue'
 import { isDummySystem, AttrKey } from '@/models/otel'
 
 export default defineComponent({
-  name: 'TracingSpans',
+  name: 'TracingList',
   components: { SpansTable, LoadPctileChart },
 
   props: {
@@ -88,7 +88,7 @@ export default defineComponent({
     const spans = useSpans(() => {
       const { projectId } = route.value.params
       return {
-        url: `/api/v1/tracing/${projectId}/spans`,
+        url: `/api/v1/tracing/${projectId}/spans?only_root=true`,
         params: props.axiosParams,
       }
     })

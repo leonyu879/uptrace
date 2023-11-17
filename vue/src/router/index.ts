@@ -45,6 +45,7 @@ import MetricsExplore from '@/metrics/views/Explore.vue'
 import MetricsHelp from '@/metrics/views/Help.vue'
 
 import Login from '@/views/Login.vue'
+import TracingList from "@/tracing/views/TracingList.vue";
 
 Vue.use(VueRouter)
 
@@ -211,10 +212,16 @@ const routes: RouteConfig[] = [
       allSystem: SystemName.spansAll,
       eventsMode: false,
       defaultQuery: exploreAttr(AttrKey.spanGroupId),
+      traceListRouteName: 'SpanTraceList',
       itemListRouteName: 'SpanList',
       groupListRouteName: 'SpanGroupList',
     },
     children: [
+      {
+        name: 'SpanTraceList',
+        path: 'traces',
+        components: { tracing: TracingList },
+      },
       {
         name: 'SpanGroupList',
         path: '',

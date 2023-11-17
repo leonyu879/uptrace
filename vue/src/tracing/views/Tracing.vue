@@ -33,6 +33,7 @@
           <v-row align="end" no-gutters>
             <v-col cols="auto">
               <v-tabs :key="$route.fullPath" background-color="transparent">
+                <v-tab :to="routes.traceList" exact-path v-if="$route.name?.startsWith('Span')">Traces</v-tab>
                 <v-tab :to="routes.groupList" exact-path>Groups</v-tab>
                 <v-tab :to="routes.spanList" exact-path>{{
                   $route.name.startsWith('Span') ? 'Spans' : 'Events'
@@ -92,6 +93,7 @@ import UptraceQuery from '@/components/UptraceQuery.vue'
 import SpanQueryBuilder from '@/tracing/query/SpanQueryBuilder.vue'
 
 interface Props {
+  traceListRouteName: string
   itemListRouteName: string
   groupListRouteName: string
 }
@@ -125,6 +127,10 @@ export default defineComponent({
       required: true,
     },
     defaultQuery: {
+      type: String,
+      required: true,
+    },
+    traceListRouteName: {
       type: String,
       required: true,
     },
@@ -205,6 +211,18 @@ export default defineComponent({
 function useRoutes(props: Props) {
   const { route } = useRouter()
 
+  const traceList = computed(() => {
+    const query = clone(route.value.query)
+    if (query.sort_by) {
+      delete query.sort_by
+    }
+
+    return {
+      name: props.traceListRouteName,
+      query,
+    }
+  })
+
   const spanList = computed(() => {
     const query = clone(route.value.query)
     if (query.sort_by) {
@@ -225,6 +243,7 @@ function useRoutes(props: Props) {
   })
 
   return proxyRefs({
+    traceList,
     groupList,
     spanList,
   })

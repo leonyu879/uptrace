@@ -16,8 +16,9 @@ type SystemFilter struct {
 	org.TimeFilter
 	ProjectID uint32
 
-	System  []string
-	GroupID uint64
+	System   []string
+	GroupID  uint64
+	OnlyRoot bool
 }
 
 func DecodeSystemFilter(app *bunapp.App, req bunrouter.Request) (*SystemFilter, error) {
@@ -47,6 +48,10 @@ func (f *SystemFilter) whereClause(q *ch.SelectQuery) *ch.SelectQuery {
 	q = q.Where("s.project_id = ?", f.ProjectID).
 		Where("s.time >= ?", f.TimeGTE).
 		Where("s.time < ?", f.TimeLT)
+
+	if f.OnlyRoot {
+		q = q.Where("s.parent_id = ?", 0)
+	}
 
 	if f.GroupID != 0 {
 		q = q.Where("s.group_id = ?", f.GroupID)
