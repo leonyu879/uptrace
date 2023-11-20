@@ -83,7 +83,7 @@ export default defineComponent({
     watch(
       () => props.eventsMode,
       (eventsMode) => {
-        spans.order.column = eventsMode ? AttrKey.spanTime : AttrKey.spanDuration
+        spans.order.column = AttrKey.spanTime
       },
       { immediate: true },
     )

@@ -118,6 +118,10 @@ export default defineComponent({
   setup(props) {
     const dialog = shallowRef(false)
 
+    for (let i = 0; i < props.trace.spans.length; i ++ ) {
+      props.trace.showTree(props.trace.spans[i])
+    }
+
     function showSpan(span: TraceSpan) {
       dialog.value = true
       props.trace.activeSpanId = span.id
