@@ -39,6 +39,9 @@ export enum AttrKey {
   httpStatusCode = 'http.status_code',
 
   rpcMethod = 'rpc.method',
+  rpcRespMsg = 'rpc.msg',
+  rpcRespError = 'rpc.resp_error',
+  rpcRid = 'rid',
   dbStatement = 'db.statement',
   dbStatementPretty = '_db.statement_pretty',
   dbOperation = 'db.operation',

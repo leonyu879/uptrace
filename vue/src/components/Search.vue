@@ -41,7 +41,7 @@ export default defineComponent({
       } else {
         const query = createUqlEditor()
           .exploreAttr(AttrKey.spanGroupId)
-          .where(`{${AttrKey.spanName},${AttrKey.spanEventName}}`, 'contains', traceId.value)
+          .where(`{${AttrKey.spanName},${AttrKey.spanEventName},${AttrKey.rpcRespError},${AttrKey.rpcRespMsg},${AttrKey.rpcRid}}`, 'contains', traceId.value)
           .toString()
         router.push({
           name: 'SpanGroupList',
