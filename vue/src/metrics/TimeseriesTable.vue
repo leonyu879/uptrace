@@ -133,7 +133,6 @@ export default defineComponent({
 
     function spanListRouteFor(item: TableItem) {
       const query = exploreAttr(AttrKey.spanGroupId)
-      console.log(query)
       const groupId = item[AttrKey.spanGroupId]
       return {
         name: item.metric == 'uptrace.tracing.spans' ? 'SpanList' : 'EventList',

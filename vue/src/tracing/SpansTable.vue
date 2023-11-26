@@ -38,7 +38,9 @@
 
       <tbody>
         <template v-for="(span, index) in spans">
-          <tr :key="`a-${index}`" class="cursor-pointer" @click="dialog.showSpan(span)">
+          <tr :key="`a-${index}`" class="cursor-pointer"
+            @click="justShowTrace ? showTrace(span) : dialog.showSpan(span)"
+          >
             <td>
               <span>{{ eventOrSpanName(span) }}</span>
             </td>
@@ -72,10 +74,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, shallowRef, nextTick, proxyRefs, PropType } from 'vue'
+import { defineComponent, shallowRef, nextTick, proxyRefs, PropType } from "vue";
 
 // Composables
-import { useRoute, useRouteQuery } from '@/use/router'
+import { useRoute, useRouteQuery, useRouterOnly } from "@/use/router";
 import { UsePager } from '@/use/pager'
 import { UseOrder } from '@/use/order'
 import { UseDateRange } from '@/use/date-range'
@@ -88,10 +90,12 @@ import SpanChips from '@/tracing/SpanChips.vue'
 // Utilities
 import { AttrKey } from '@/models/otel'
 import { eventOrSpanName, Span } from '@/models/span'
+// import TraceShowDialog from '@/tracing/TraceShowDialog.vue'
 
 export default defineComponent({
   name: 'SpansTable',
   components: {
+    // TraceShowDialog,
     ThOrder,
     SpanChips,
     SpanCardDateRange,
@@ -130,6 +134,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    justShowTrace: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   setup(props) {
@@ -155,6 +163,17 @@ export default defineComponent({
       })
     }
 
+    function showTrace(span: Span) {
+      const router = useRouterOnly()
+      const traceRoute = router.resolve({
+        name: 'TraceShow',
+        params: {
+          traceId: span.traceId,
+        },
+      }).href
+      window.open(traceRoute, '_blank')
+    }
+
     return {
       AttrKey,
       dialog,
@@ -162,6 +181,7 @@ export default defineComponent({
       eventOrSpanName,
       systemRoute,
       onSortBy,
+      showTrace,
     }
   },
 })

@@ -26,6 +26,7 @@
               :order="spans.order"
               :pager="spans.pager"
               :show-system="showSystem"
+              :just-show-trace=true
               @click:chip="onChipClick"
             />
           </v-col>
