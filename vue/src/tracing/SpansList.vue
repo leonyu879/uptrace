@@ -6,6 +6,7 @@
       :order="spans.order"
       :pager="spans.pager"
       :events-mode="eventsMode"
+      :just-show-trace="true"
       class="mb-4"
       v-on="listeners"
     />
